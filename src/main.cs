@@ -8,5 +8,5 @@ while (true)
 
     var s = Console.ReadLine();
 
-    Console.Write($"{s}: command not found");
+    Console.Write($"{s}: command not found\n");
 }
