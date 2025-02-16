@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 while (true)
 {
@@ -28,13 +29,14 @@ while (true)
                 if (i < cmd.Length - 1)
                     Console.Write(" ");
             }
+            Console.Write("\n");
             break;
         case "type":
-            if (cmd.Length == 0)
+            if (cmd.Length == 1)
                 break;
             if (builtins.Contains(cmd[1]))
             {
-                Console.Write(cmd[1] + " is a shell builtin");
+                Console.WriteLine(cmd[1] + " is a shell builtin");
                 break;
             }
 
@@ -47,17 +49,40 @@ while (true)
                 if (File.Exists(full_path))
                 {
                     found = true;
-                    Console.Write($"{cmd[1]} is {full_path}");
+                    Console.WriteLine($"{cmd[1]} is {full_path}");
                     break;
                 }
             }
 
             if (!found)
-                Console.Write(cmd[1] + ": not found");
+                Console.WriteLine(cmd[1] + ": not found");
             break;
         default:
-            Console.Write($"{s}: command not found");
+            var envPath = Environment.GetEnvironmentVariable("PATH") ?? "";
+            var pathss = envPath.Split(":");
+            var foundd = false;
+
+            foreach (var path in pathss)
+            {
+                var full_path = Path.Join(path, cmd[0]);
+                if (File.Exists(full_path))
+                {
+                    foundd = true;
+                    var process = Process.Start(new ProcessStartInfo
+                    {
+                        FileName = cmd[0],
+                        Arguments = string.Join(" ", cmd.Skip(1)),
+                        UseShellExecute = false
+                    });
+                    if (process != null)
+                        process.WaitForExit();
+                    break;
+                }
+            }
+
+            if (!foundd)
+                Console.WriteLine($"{s}: command not found");
             break;
     }
-    Console.Write("\n");
 }
+
