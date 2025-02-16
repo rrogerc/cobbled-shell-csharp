@@ -33,8 +33,26 @@ while (true)
             if (cmd.Length == 0)
                 break;
             if (builtins.Contains(cmd[1]))
+            {
                 Console.Write(cmd[1] + " is a shell builtin");
-            else
+                break;
+            }
+
+            var paths = Environment.GetEnvironmentVariable("PATH").Split(":");
+            bool found = false;
+
+            foreach (var path in paths)
+            {
+                var full_path = Path.Join(path, cmd[1]);
+                if (File.Exists(full_path))
+                {
+                    found = true;
+                    Console.Write($"{cmd[1]} is {full_path}");
+                    break;
+                }
+            }
+
+            if (!found)
                 Console.Write(cmd[1] + ": not found");
             break;
         default:
@@ -42,6 +60,4 @@ while (true)
             break;
     }
     Console.Write("\n");
-
-
 }
