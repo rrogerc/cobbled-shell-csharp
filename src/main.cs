@@ -14,8 +14,24 @@ while (true)
     if (cmd.Length == 0)
         continue;
 
-    if (cmd[0] == "exit")
-        Environment.Exit(int.Parse(cmd[1]));
+    switch (cmd[0])
+    {
+        case "exit":
+            Environment.Exit(int.Parse(cmd[1]));
+            break;
+        case "echo":
+            for (int i = 1; i < cmd.Length; i++)
+            {
+                Console.Write(cmd[i]);
+                if (i < cmd.Length - 1)
+                    Console.Write(" ");
+            }
+            break;
+        default:
+            Console.Write($"{s}: command not found");
+            break;
+    }
+    Console.Write("\n");
 
-    Console.Write($"{s}: command not found\n");
+
 }
