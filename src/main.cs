@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 while (true)
 {
@@ -30,7 +31,7 @@ while (true)
             }
             break;
         case "type":
-            if (cmd.Length == 0)
+            if (cmd.Length == 1)
                 break;
             if (builtins.Contains(cmd[1]))
             {
@@ -56,7 +57,28 @@ while (true)
                 Console.Write(cmd[1] + ": not found");
             break;
         default:
-            Console.Write($"{s}: command not found");
+            if (cmd.Length == 1)
+                break;
+
+            var pathss = Environment.GetEnvironmentVariable("PATH").Split(":");
+            var foundd = false;
+
+            foreach (var path in pathss)
+            {
+                var full_path = Path.Join(path, cmd[1]);
+                if (File.Exists(full_path))
+                {
+                    foundd = true;
+                    using var process = new Process();
+                    process.StartInfo.FileName = full_path;
+                    process.StartInfo.Arguments = string.Join(" ", cmd.Skip(1).ToArray());
+                    process.Start();
+                    break;
+                }
+            }
+
+            if (!foundd)
+                Console.Write($"{s}: command not found");
             break;
     }
     Console.Write("\n");
