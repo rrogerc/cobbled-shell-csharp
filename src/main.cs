@@ -14,6 +14,8 @@ while (true)
     if (cmd.Length == 0)
         continue;
 
+    List<string> builtins = ["exit", "echo", "type"];
+
     switch (cmd[0])
     {
         case "exit":
@@ -26,6 +28,14 @@ while (true)
                 if (i < cmd.Length - 1)
                     Console.Write(" ");
             }
+            break;
+        case "type":
+            if (cmd.Length == 0)
+                break;
+            if (builtins.Contains(cmd[1]))
+                Console.Write(cmd[1] + " is a shell command");
+            else
+                Console.Write(cmd[1] + ": not found");
             break;
         default:
             Console.Write($"{s}: command not found");
